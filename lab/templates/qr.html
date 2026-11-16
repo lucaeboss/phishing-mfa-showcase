@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QR phishing (quishing) &middot; ExampleCorp lab</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="trainbar">TRAINING LAB &middot; quishing demo &middot; this QR points ONLY to your local fictional portal</div>
+  <header class="top"><div class="logo">Example<span>Corp</span> <span class="small muted">lab</span></div><div class="small"><a href="/">lab home</a></div></header>
+
+  <div class="wrap">
+    <div class="card">
+      <h1>QR-code phishing (&ldquo;quishing&rdquo;)</h1>
+      <p class="muted">Same captive-portal attack &mdash; different delivery. Instead of a link, the victim scans a QR code. Scan the code below with a phone on the same network to land on the training portal.</p>
+
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:center;margin:10px 0">
+        <div class="qr">{{ qr_svg|safe }}</div>
+        <div style="flex:1;min-width:240px">
+          <label>This code links to (local training portal)</label>
+          <div class="kv">{{ target }}</div>
+          <form method="get" action="/qr" style="margin-top:12px">
+            <label>Host to encode (your machine&rsquo;s LAN IP so a phone can reach it)</label>
+            <input type="text" name="host" value="{{ host }}">
+            <button type="submit">Update QR</button>
+          </form>
+        </div>
+      </div>
+
+      <h2>Why attackers use QR codes</h2>
+      <ul class="small">
+        <li><strong>The URL is hidden.</strong> You can&rsquo;t read a QR with your eyes, so the usual &ldquo;check the link before clicking&rdquo; advice doesn&rsquo;t apply.</li>
+        <li><strong>It jumps to a phone.</strong> Phones are often personal and unmanaged &mdash; no corporate URL filtering, smaller screen, address bar easy to miss.</li>
+        <li><strong>It dodges email scanners.</strong> A QR embedded in an image or printed on a poster sails past link-scanning that would flag a raw URL.</li>
+      </ul>
+
+      <h2>Defenses</h2>
+      <ul class="small">
+        <li>Treat a QR that leads to a <em>login</em> as suspicious &mdash; navigate to the site yourself instead.</li>
+        <li>Check the full URL on the phone&rsquo;s preview before opening, and look at the real address bar after.</li>
+        <li>Mobile device management (MDM) and phishing-resistant sign-in (passkeys) still apply on the phone &mdash; see <a href="/secure">Stage 4</a>.</li>
+      </ul>
+
+      <p class="small muted">Scope: this page builds a QR for your local lab host only. Don&rsquo;t encode a real or public site, and run the scan in a controlled, in-person setting.</p>
+      <a class="btn ghost" href="/">Back to lab home</a>
+    </div>
+  </div>
+</body>
+</html>

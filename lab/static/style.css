@@ -1,0 +1,81 @@
+/* ExampleCorp training lab — editorial theme, matched to the project showcase. */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,560;0,9..144,650;1,9..144,440&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root{
+  --paper:#f6f3ec; --panel:#efeae0; --ink:#1b1915; --ink-soft:#615b50; --faint:#938b7c;
+  --line:#ddd6c8; --rule:#c8c0b0;
+  --accent:#1f3a5f; --attack:#9c2f2f; --defense:#2b6048;
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:"Inter",system-ui,-apple-system,Segoe UI,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --radius:8px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#15140f; --panel:#1d1b15; --ink:#efe9dd; --ink-soft:#b3ab9c; --faint:#857d6e;
+    --line:#2c2a22; --rule:#3a372d; --accent:#8fb3df; --attack:#e08b8b; --defense:#8fcfb1;
+  }
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font:16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-underline-offset:3px}
+.wrap{max-width:860px;margin:0 auto;padding:28px 20px 72px}
+.center{max-width:440px}
+
+/* training / attacker banners */
+.trainbar{background:color-mix(in srgb,var(--defense) 12%,var(--paper));
+  color:var(--defense);border-bottom:1px solid var(--line);
+  padding:8px 16px;text-align:center;font:500 11.5px/1.4 var(--mono);letter-spacing:.06em}
+.evilbar{background:var(--attack);color:#fff;border-bottom:1px solid rgba(0,0,0,.2);
+  padding:9px 16px;text-align:center;font:500 11.5px/1.4 var(--mono);letter-spacing:.06em}
+
+/* masthead */
+header.top{display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;border-bottom:1px solid var(--rule);background:var(--paper)}
+header.top .logo{font:650 18px/1 var(--serif);letter-spacing:-.01em}
+header.top .logo span{color:var(--accent)}
+
+/* cards & type */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:26px}
+h1{font:560 30px/1.1 var(--serif);letter-spacing:-.015em;margin:4px 0 16px}
+h2{font:560 20px/1.2 var(--serif);letter-spacing:-.01em;margin:26px 0 10px}
+p{margin:0 0 16px}
+
+label{display:block;font:500 11px/1.4 var(--mono);letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-soft);margin:16px 0 6px}
+input[type=text],input[type=password],input[type=email]{
+  width:100%;padding:11px 13px;border-radius:var(--radius);border:1px solid var(--line);
+  background:var(--paper);color:var(--ink);font:15px var(--sans)}
+input:focus{outline:none;border-color:var(--accent)}
+
+button,.btn{display:inline-block;margin-top:18px;padding:11px 18px;border:0;border-radius:var(--radius);
+  background:var(--accent);color:var(--paper);font:600 15px var(--sans);cursor:pointer;text-decoration:none}
+button.ghost,.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+button:hover,.btn:hover{opacity:.94}
+
+.muted{color:var(--ink-soft)}
+.small{font-size:13px}
+.err{background:color-mix(in srgb,var(--attack) 10%,transparent);border:1px solid var(--attack);
+  color:var(--attack);padding:10px 13px;border-radius:var(--radius);margin:14px 0;font-size:14px}
+.ok{background:color-mix(in srgb,var(--defense) 10%,transparent);border:1px solid var(--defense);
+  color:var(--defense);padding:10px 13px;border-radius:var(--radius);margin:14px 0;font-size:14px}
+
+/* editorial helpers reused by the lab pages */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+.tile h3{margin:0 0 6px;font:560 16px var(--serif)}
+.pill{display:inline-block;font:500 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--ink-soft)}
+.pill.red{color:var(--attack);border-color:var(--attack)}
+.pill.green{color:var(--defense);border-color:var(--defense)}
+.kv{font:13px/1.6 var(--mono);background:var(--paper);border:1px solid var(--line);
+  border-radius:var(--radius);padding:13px;overflow:auto;white-space:pre-wrap;color:var(--ink)}
+.qr{background:#fff;display:inline-block;padding:10px;border-radius:var(--radius);border:1px solid var(--line)}
+.qr svg{width:190px;height:190px;display:block}
+.step{border-left:2px solid var(--accent);padding-left:14px;margin:16px 0}
+.step h2{margin-top:0}
+.log{color:var(--ink-soft);font-size:13px}

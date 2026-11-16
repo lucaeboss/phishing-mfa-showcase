@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Enroll &middot; ExampleCorp</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="trainbar">TRAINING LAB &middot; fictional service</div>
+  <header class="top"><div class="logo">Example<span>Corp</span></div><div class="small"><a href="/">lab home</a></div></header>
+  <div class="wrap center">
+    <div class="card">
+      <h1>Create an account</h1>
+      <p class="muted small">You&rsquo;ll get a password login plus a TOTP secret to add to an authenticator app.</p>
+      {% if error %}<div class="err">{{ error }}</div>{% endif %}
+      <form method="post" action="/api/enroll">
+        <label>Username (use an email-style handle, e.g. alice@examplecorp.test)</label>
+        <input type="text" name="username" autocomplete="off" required>
+        <label>Password</label>
+        <input type="password" name="password" required>
+        <button type="submit">Create account</button>
+      </form>
+    </div>
+    <p class="small"><a href="/login">Already have an account? Sign in</a></p>
+  </div>
+</body>
+</html>

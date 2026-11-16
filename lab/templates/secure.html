@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Passkey sign-in &middot; ExampleCorp</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="trainbar">TRAINING LAB &middot; the phishing-resistant path</div>
+  <header class="top"><div class="logo">Example<span>Corp</span> <span class="small muted">secure</span></div><div class="small"><a href="/">lab home</a></div></header>
+  <div class="wrap center">
+    <div class="card">
+      <h1>Passkey (FIDO2 / WebAuthn)</h1>
+      <p class="muted small">First enroll a password account at <a href="/enroll">/enroll</a>, then add a passkey to it here. Uses Windows Hello / a security key / your phone.</p>
+
+      <label>Username</label>
+      <input type="text" id="username" autocomplete="username" placeholder="victim@examplecorp.test">
+
+      <div>
+        <button id="reg">Register a passkey</button>
+        <button id="login" class="ghost">Sign in with passkey</button>
+      </div>
+      <div id="out"></div>
+
+      <h2>Why this breaks the attack</h2>
+      <ul class="small">
+        <li><strong>Nothing to phish.</strong> There is no password or code to type into the evil portal.</li>
+        <li><strong>Origin-bound.</strong> The browser signs a challenge tied to <code>localhost</code>. A fake page on another origin cannot get a signature the server will accept &mdash; so an AiTM relay can&rsquo;t forward it either.</li>
+        <li><strong>Private key never leaves the authenticator.</strong> There is no shared secret sitting on the server to steal.</li>
+      </ul>
+      <p class="small muted">Try it: register a passkey here, then open the <a href="/portal">evil portal</a> &mdash; notice it has no way to capture a passkey at all.</p>
+    </div>
+  </div>
+
+  <script src="/static/webauthn.js"></script>
+  <script>
+    const out = document.getElementById("out");
+    function show(okFlag, msg){
+      out.innerHTML = '<div class="' + (okFlag ? "ok" : "err") + '">' + msg + '</div>';
+    }
+    function uname(){ return (document.getElementById("username").value || "").trim(); }
+    document.getElementById("reg").onclick = () => {
+      if(!uname()) return show(false, "Enter the username of an enrolled account first.");
+      if(!window.PublicKeyCredential) return show(false, "This browser has no WebAuthn support.");
+      show(true, "Follow your authenticator prompt&hellip;");
+      registerPasskey(uname(), show);
+    };
+    document.getElementById("login").onclick = () => {
+      if(!uname()) return show(false, "Enter your username first.");
+      if(!window.PublicKeyCredential) return show(false, "This browser has no WebAuthn support.");
+      show(true, "Follow your authenticator prompt&hellip;");
+      loginPasskey(uname(), (ok,msg) => { show(ok,msg); if(ok) setTimeout(()=>location.href="/dashboard",700); });
+    };
+  </script>
+</body>
+</html>

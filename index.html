@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phishing &amp; MFA — Senior Project</title>
+<meta name="description" content="A study of the modern credential-phishing chain and the phishing-resistant authentication that breaks it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,560;0,9..144,650;1,9..144,440&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f6f3ec; --panel:#efeae0; --ink:#1b1915; --ink-soft:#615b50; --faint:#938b7c;
+    --line:#ddd6c8; --rule:#c8c0b0;
+    --accent:#1f3a5f; --attack:#9c2f2f; --defense:#2b6048;
+    --serif:"Fraunces",Georgia,"Times New Roman",serif;
+    --sans:"Inter",system-ui,-apple-system,Segoe UI,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#15140f; --panel:#1d1b15; --ink:#efe9dd; --ink-soft:#b3ab9c; --faint:#857d6e;
+      --line:#2c2a22; --rule:#3a372d;
+      --accent:#8fb3df; --attack:#e08b8b; --defense:#8fcfb1;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#15140f; --panel:#1d1b15; --ink:#efe9dd; --ink-soft:#b3ab9c; --faint:#857d6e;
+    --line:#2c2a22; --rule:#3a372d; --accent:#8fb3df; --attack:#e08b8b; --defense:#8fcfb1;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+    font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .shell{max-width:1120px;margin:0 auto;padding:0 32px}
+  @media(max-width:620px){.shell{padding:0 20px}.body-col{max-width:none}}
+  .body-col{max-width:720px}
+  a{color:var(--accent);text-underline-offset:3px;text-decoration-thickness:1px}
+
+  /* masthead */
+  .masthead{border-bottom:1px solid var(--rule)}
+  .masthead .shell{display:flex;align-items:baseline;justify-content:space-between;padding-top:20px;padding-bottom:20px;gap:20px}
+  .mark{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+  .mark b{color:var(--ink);font-weight:500}
+  .masthead nav{display:flex;gap:26px;font-size:13.5px}
+  .masthead nav a{color:var(--ink-soft);text-decoration:none}
+  .masthead nav a:hover{color:var(--ink)}
+  @media(max-width:760px){.masthead nav{display:none}}
+
+  /* title block */
+  .title{padding:72px 0 56px;border-bottom:1px solid var(--rule)}
+  .kicker{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--attack);margin:0 0 26px}
+  h1{font-family:var(--serif);font-weight:560;font-size:clamp(38px,6.4vw,70px);line-height:1.02;
+    letter-spacing:-.015em;margin:0;max-width:16ch}
+  h1 em{font-style:italic;font-weight:440;color:var(--accent)}
+  .standfirst{font-size:clamp(18px,2.2vw,21px);color:var(--ink-soft);max-width:46ch;margin:28px 0 0;line-height:1.5}
+  .meta{margin-top:40px;display:flex;flex-wrap:wrap;gap:28px;font-family:var(--mono);font-size:12.5px;color:var(--faint);letter-spacing:.04em}
+  .meta span b{color:var(--ink-soft);font-weight:500;display:block;text-transform:uppercase;letter-spacing:.12em;font-size:11px;margin-bottom:3px}
+
+  /* sections */
+  section{padding:64px 0;border-bottom:1px solid var(--rule)}
+  .sechead{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:baseline;margin-bottom:32px}
+  .signum{font-family:var(--mono);font-size:13px;color:var(--attack);letter-spacing:.1em}
+  .sechead h2{font-family:var(--serif);font-weight:560;font-size:clamp(26px,3.6vw,38px);letter-spacing:-.01em;margin:0;line-height:1.1}
+  .sechead h2 + p{grid-column:2;margin:.5em 0 0}
+  .lead{color:var(--ink-soft);font-size:19px;max-width:60ch}
+
+  p{margin:0 0 18px}
+  .dropcap::first-letter{font-family:var(--serif);font-weight:560;font-size:3.1em;line-height:.8;float:left;margin:.05em .12em 0 0;color:var(--ink)}
+
+  /* editorial points */
+  .points{border-top:1px solid var(--line);margin-top:28px}
+  .points .row{display:grid;grid-template-columns:200px 1fr;gap:24px;padding:22px 0;border-bottom:1px solid var(--line)}
+  .points .row h3{font-family:var(--serif);font-weight:560;font-size:20px;margin:0;letter-spacing:-.01em}
+  .points .row p{margin:0;color:var(--ink-soft);font-size:16px}
+  @media(max-width:620px){.points .row{grid-template-columns:1fr;gap:6px}}
+
+  /* figure / diagram */
+  figure{margin:36px 0 10px}
+  .plate{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:26px 22px}
+  .plate svg{width:100%;height:auto;display:block}
+  figcaption{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.04em;margin-top:12px;padding-left:2px}
+
+  /* attack chain */
+  .chain{counter-reset:stg;border-top:1px solid var(--rule);margin-top:10px}
+  .stg{display:grid;grid-template-columns:52px 1fr;gap:22px;padding:28px 0;border-bottom:1px solid var(--line)}
+  .stg .idx{font-family:var(--mono);font-size:14px;color:var(--faint);padding-top:5px}
+  .stg h3{font-family:var(--serif);font-weight:560;font-size:22px;margin:0 0 2px;letter-spacing:-.01em;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+  .stg p{margin:8px 0 0;color:var(--ink-soft);font-size:16px}
+  .stg .note{margin-top:12px;font-size:15px;color:var(--ink);padding-left:16px;border-left:2px solid var(--line)}
+  .label{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;padding:2px 0;border-bottom:2px solid}
+  .label.a{color:var(--attack);border-color:var(--attack)}
+  .label.n{color:var(--ink-soft);border-color:var(--rule)}
+  .label.d{color:var(--defense);border-color:var(--defense)}
+  @media(max-width:620px){.stg{grid-template-columns:1fr;gap:6px}.stg .idx{padding-top:0}}
+
+  /* table */
+  .tablewrap{overflow:auto;margin-top:6px;border-top:2px solid var(--ink)}
+  table{border-collapse:collapse;width:100%;min-width:620px;font-size:15px}
+  th,td{text-align:left;padding:14px 16px 14px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  thead th{font-family:var(--mono);font-weight:500;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+  td:first-child,th:first-child{padding-left:4px}
+  .rowname{font-family:var(--serif);font-weight:560;font-size:17px}
+  tr.best td{background:color-mix(in srgb,var(--defense) 9%,transparent)}
+  .yes{color:var(--defense);font-weight:600}
+  .no{color:var(--attack);font-weight:600}
+  .partial{color:var(--ink-soft);font-weight:600}
+
+  /* demonstration list */
+  .demo{counter-reset:d;list-style:none;padding:0;margin:8px 0 0;border-top:1px solid var(--line)}
+  .demo li{display:grid;grid-template-columns:auto 1fr;gap:18px;padding:18px 0;border-bottom:1px solid var(--line);align-items:baseline}
+  .demo li::before{counter-increment:d;content:counter(d,decimal-leading-zero);font-family:var(--mono);font-size:13px;color:var(--attack)}
+  .demo b{font-weight:600}
+  .demo span{color:var(--ink-soft)}
+
+  .scope{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:4px;padding:22px 24px}
+  .scope + .scope{margin-top:14px;border-left-color:var(--attack)}
+  .scope p:last-child{margin-bottom:0}
+  .scope p{font-size:16px}
+
+  /* lab walkthrough "screens" */
+  .screens{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:4px 0 8px}
+  @media(max-width:720px){.screens{grid-template-columns:1fr}}
+  .scard{margin:0}
+  .scard figcaption{font-family:var(--mono);font-size:11.5px;color:var(--faint);letter-spacing:.03em;margin-top:10px;line-height:1.55}
+  .screen{border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--panel)}
+  .screen .bar{display:flex;align-items:center;gap:9px;padding:9px 12px;border-bottom:1px solid var(--line)}
+  .screen .dots{display:flex;gap:5px}
+  .screen .dots i{width:9px;height:9px;border-radius:50%;background:var(--rule)}
+  .screen .url{font-family:var(--mono);font-size:11px;color:var(--ink-soft);background:var(--paper);border:1px solid var(--line);border-radius:5px;padding:3px 10px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .screen .body{padding:18px;min-height:156px}
+  .screen .tagstrip{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;padding:4px 9px;border-radius:4px;margin-bottom:14px}
+  .screen .tagstrip.a{color:var(--attack);background:color-mix(in srgb,var(--attack) 14%,transparent)}
+  .screen .tagstrip.d{color:var(--defense);background:color-mix(in srgb,var(--defense) 14%,transparent)}
+  .screen .tagstrip.n{color:var(--ink-soft);background:color-mix(in srgb,var(--ink-soft) 13%,transparent)}
+  .screen h4{font-family:var(--serif);font-weight:560;font-size:18px;margin:0 0 12px}
+  .screen .field{border:1px solid var(--line);border-radius:6px;padding:9px 11px;font-size:12.5px;color:var(--faint);background:var(--paper);margin-bottom:9px}
+  .screen .btn-fake{display:inline-block;margin-top:5px;background:var(--accent);color:var(--paper);font-size:12.5px;font-weight:600;padding:8px 15px;border-radius:7px}
+  .screen .btn-fake.ghost{background:transparent;border:1px solid var(--line);color:var(--ink);margin-left:6px}
+  .screen .mono{font-family:var(--mono);font-size:11.5px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:12px;white-space:pre-wrap;line-height:1.6}
+  .screen .mono .r{color:var(--attack);font-weight:600} .screen .mono .g{color:var(--defense);font-weight:600}
+  .qrbox{display:flex;gap:14px;align-items:center}
+  .qrbox svg{border-radius:4px}
+  footer{padding:46px 0 72px}
+  footer p{font-family:var(--mono);font-size:12.5px;color:var(--faint);letter-spacing:.03em;margin:0 0 6px}
+</style>
+</head>
+<body>
+
+<header class="masthead"><div class="shell">
+  <div class="mark">Senior Security Project &middot; <b>2026</b></div>
+  <nav>
+    <a href="#problem">Problem</a>
+    <a href="#chain">Attack chain</a>
+    <a href="#defense">Defense</a>
+    <a href="#table">Comparison</a>
+    <a href="#demo">Demonstration</a>
+    <a href="#scope">Scope</a>
+  </nav>
+</div></header>
+
+<div class="title"><div class="shell">
+  <p class="kicker">Credential phishing &amp; multi-factor authentication</p>
+  <h1>Modern phishing doesn't break the password. It steals the <em>session</em>.</h1>
+  <p class="standfirst">A study of the credential-phishing chain — from rogue access points to real-time adversary-in-the-middle session theft — and the one form of authentication that finally breaks it.</p>
+  <div class="meta">
+    <span><b>Author</b>Luca Caramihai</span>
+    <span><b>Advisor</b>Dr. Stephanos Mavromoustakos</span>
+    <span><b>Field</b>Cybersecurity</span>
+    <span><b>Status</b>In progress</span>
+  </div>
+</div></div>
+
+<main>
+
+<section id="problem"><div class="shell"><div class="body-col">
+  <div class="sechead"><span class="signum">01</span><h2>A second factor was supposed to end password theft.</h2></div>
+  <p class="dropcap">For a decade, two-factor authentication was the answer to phishing: steal a password and it is useless without the code. That remains true for simple, credential-only attacks — which is exactly why attackers stopped collecting passwords and started collecting something else. The modern target is the <strong>session token</strong> a service issues <em>after</em> a successful login. A second factor guards the login event; it does nothing for the session that follows. Whoever holds that token is treated as the user.</p>
+</div>
+  <div class="body-col points">
+    <div class="row"><h3>Evil-twin access points</h3><p>A rogue Wi-Fi hotspot and a captive-portal login page record whatever a victim types. This project's hardware phase demonstrated the technique with a T-Embed CC1101 device running Bruce firmware.</p></div>
+    <div class="row"><h3>Adversary-in-the-middle</h3><p>A reverse-proxy phishing page relays the real login in real time, so even app-based and push approvals are completed by the victim and captured in transit.</p></div>
+    <div class="row"><h3>Session theft</h3><p>The post-login cookie is a bearer credential. Replaying it grants full access with no second factor re-checked — the pivot this project makes concrete.</p></div>
+  </div>
+</div></section>
+
+<section id="chain"><div class="shell">
+  <div class="body-col">
+    <div class="sechead"><span class="signum">02</span><h2>Five stages, each paired with its defense.</h2>
+      <p class="lead">The chain builds from a stolen password to a stolen session, then to the control that breaks it at the root.</p></div>
+  </div>
+
+  <figure>
+    <div class="plate">
+      <svg viewBox="0 0 900 210" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Mono, monospace">
+        <defs>
+          <marker id="a" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="currentColor"/></marker>
+        </defs>
+        <g fill="none" stroke="var(--ink)" color="var(--ink)">
+          <rect x="18" y="74" width="158" height="66" rx="3" stroke-width="1.5"/>
+          <rect x="760" y="74" width="122" height="66" rx="3" stroke-width="1.5"/>
+        </g>
+        <rect x="372" y="64" width="176" height="86" rx="3" fill="none" stroke="var(--attack)" stroke-width="1.75"/>
+        <g font-size="13" fill="var(--ink)">
+          <text x="97" y="100" text-anchor="middle" font-weight="500">Victim</text>
+          <text x="97" y="120" text-anchor="middle" font-size="11" fill="var(--ink-soft)">password + 2FA</text>
+          <text x="821" y="100" text-anchor="middle" font-weight="500">Real service</text>
+          <text x="821" y="120" text-anchor="middle" font-size="11" fill="var(--ink-soft)">issues session</text>
+        </g>
+        <g font-size="13" fill="var(--attack)">
+          <text x="460" y="96" text-anchor="middle" font-weight="500">Attacker proxy</text>
+          <text x="460" y="116" text-anchor="middle" font-size="11">relays login,</text>
+          <text x="460" y="132" text-anchor="middle" font-size="11">captures the token</text>
+        </g>
+        <g stroke-width="1.5" color="var(--ink-soft)">
+          <line x1="178" y1="99" x2="368" y2="99" stroke="var(--ink-soft)" marker-end="url(#a)"/>
+          <line x1="370" y1="118" x2="180" y2="118" stroke="var(--ink-soft)" marker-end="url(#a)"/>
+          <line x1="550" y1="99" x2="756" y2="99" stroke="var(--ink-soft)" marker-end="url(#a)"/>
+        </g>
+        <line x1="758" y1="118" x2="552" y2="118" stroke="var(--attack)" stroke-width="1.75" color="var(--attack)" marker-end="url(#a)"/>
+        <g font-size="10.5" fill="var(--faint)" text-anchor="middle">
+          <text x="273" y="88">looks legitimate</text>
+          <text x="653" y="88">forwarded live</text>
+        </g>
+        <text x="653" y="138" font-size="10.5" fill="var(--attack)" text-anchor="middle">token captured</text>
+        <text x="450" y="28" font-size="12.5" fill="var(--ink)" text-anchor="middle" font-weight="500">Adversary-in-the-middle — the victim satisfies the 2FA; the attacker keeps the session</text>
+        <text x="450" y="192" font-size="11.5" fill="var(--defense)" text-anchor="middle">A passkey assertion is bound to the real origin, so the proxy's relay is rejected.</text>
+      </svg>
+    </div>
+    <figcaption>Fig. 1 — Real-time session theft, and why origin-bound authentication defeats it.</figcaption>
+  </figure>
+
+  <div class="body-col chain">
+    <div class="stg"><div class="idx">01</div><div>
+      <h3>Credential capture <span class="label a">Attack</span></h3>
+      <p>A fake login page — delivered by a rogue access point or a lookalike link — records the username and password in plaintext. The human trusts the page, not the origin.</p>
+      <p class="note">Defense: user awareness, and password managers that refuse to autofill on the wrong origin — a machine check people lack.</p>
+    </div></div>
+    <div class="stg"><div class="idx">02</div><div>
+      <h3>The second factor holds <span class="label n">Partial win</span></h3>
+      <p>With TOTP, SMS, or push enabled, a stolen password alone fails at the code prompt. This genuinely stops basic, credential-only phishing — and pushes attackers to escalate.</p>
+      <p class="note">Insight: the target moves from the password to whatever exists after login.</p>
+    </div></div>
+    <div class="stg"><div class="idx">03</div><div>
+      <h3>Adversary-in-the-middle &amp; session theft <span class="label a">Attack</span></h3>
+      <p>A proxy relays the real login as it happens; the victim completes the second factor on the proxy, and the issued session token is captured. Replayed, it grants full access with nothing re-checked. The project demonstrates this against a controlled target only.</p>
+      <p class="note">Partial defenses: short session lifetimes, token binding, step-up re-authentication, and conditional access reduce a stolen token's value.</p>
+    </div></div>
+    <div class="stg"><div class="idx">04</div><div>
+      <h3>Phishing-resistant authentication <span class="label d">Defense</span></h3>
+      <p>WebAuthn (FIDO2 / passkeys) replaces the shared secret with a key pair. The browser signs a challenge bound to the origin it is actually talking to, so a fake page or a relay on another origin cannot produce a signature the real service will accept.</p>
+      <p class="note">Result: nothing to phish at Stage 01, nothing to relay at Stage 03, and only public keys stored on the server.</p>
+    </div></div>
+    <div class="stg"><div class="idx">05</div><div>
+      <h3>Harden the session <span class="label d">Defense</span></h3>
+      <p>Passkeys fix authentication; the session that follows is still a bearer token unless it is bound to the device and kept short-lived, with re-authentication required for sensitive actions.</p>
+      <p class="note">Closing the door the attacker knocks on, and the window they climb through instead.</p>
+    </div></div>
+  </div>
+</div></section>
+
+<section id="defense"><div class="shell"><div class="body-col">
+  <div class="sechead"><span class="signum">03</span><h2>Why passkeys are categorically different.</h2></div>
+  <p>Every method short of a passkey produces a secret the user can be induced to hand over — directly, or by completing it on a proxy. A passkey produces a signature cryptographically tied to the origin. There is nothing bearer-shaped to steal at the moment of authentication.</p>
+</div>
+  <div class="body-col points">
+    <div class="row"><h3>Nothing to phish</h3><p>No password or code is ever typed into a page, so a fake portal has nothing to record.</p></div>
+    <div class="row"><h3>Origin-bound</h3><p>The authenticator signs data that includes the real origin; a relay on another origin cannot forward a usable assertion.</p></div>
+    <div class="row"><h3>No server secret</h3><p>The service stores only public keys, so a breach does not yield reusable credentials.</p></div>
+  </div>
+</div></section>
+
+<section id="table"><div class="shell">
+  <div class="body-col"><div class="sechead"><span class="signum">04</span><h2>Authentication methods against the attack chain.</h2></div></div>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Method</th><th>Stops password-only phishing</th><th>Stops real-time session theft</th><th>Shared secret on server</th></tr></thead>
+    <tbody>
+      <tr><td class="rowname">Password only</td><td><span class="no">No</span></td><td><span class="no">No</span></td><td>Yes — a stored hash</td></tr>
+      <tr><td class="rowname">SMS one-time code</td><td><span class="yes">Yes</span></td><td><span class="no">No</span></td><td>No — SIM-swap exposed</td></tr>
+      <tr><td class="rowname">TOTP authenticator</td><td><span class="yes">Yes</span></td><td><span class="no">No</span></td><td>Yes — a shared seed</td></tr>
+      <tr><td class="rowname">Push approval</td><td><span class="yes">Yes</span></td><td><span class="no">No</span></td><td>No — fatigue-prompt risk</td></tr>
+      <tr><td class="rowname">Push + number match</td><td><span class="yes">Yes</span></td><td><span class="partial">Partial</span></td><td>No</td></tr>
+      <tr class="best"><td class="rowname">FIDO2 / passkey</td><td><span class="yes">Yes</span></td><td><span class="yes">Yes</span></td><td>No — a public key</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+
+<section id="demo"><div class="shell">
+  <div class="body-col">
+    <div class="sechead"><span class="signum">05</span><h2>The live demonstration.</h2>
+      <p class="lead">A working lab runs the full chain against a fictional service on an isolated host. Each screen below is a stage of that lab; in the live demonstration they are driven in sequence.</p></div>
+  </div>
+
+  <div class="screens">
+    <figure class="scard">
+      <div class="screen">
+        <div class="bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">localhost:5000/portal</span></div>
+        <div class="body">
+          <span class="tagstrip a">Stage 01 — capture</span>
+          <h4>Sign in to continue</h4>
+          <div class="field">Username</div>
+          <div class="field">Password</div>
+          <span class="btn-fake">Sign in</span>
+        </div>
+      </div>
+      <figcaption>The fake portal. Anything typed is written to the attacker's log, not sent to any real service.</figcaption>
+    </figure>
+
+    <figure class="scard">
+      <div class="screen">
+        <div class="bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">localhost:5000/portal/capture</span></div>
+        <div class="body">
+          <span class="tagstrip a">Credentials harvested</span>
+          <h4>Captured in plaintext</h4>
+          <div class="mono">username: victim@examplecorp.test
+password: Password123!</div>
+        </div>
+      </div>
+      <figcaption>The same live plaintext seen on the T-Embed — now also appended to a local capture log.</figcaption>
+    </figure>
+
+    <figure class="scard">
+      <div class="screen">
+        <div class="bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">localhost:5000/totp</span></div>
+        <div class="body">
+          <span class="tagstrip n">Stage 02 — the wall</span>
+          <h4>Enter your code</h4>
+          <div class="field">6-digit code from the authenticator app</div>
+          <span class="btn-fake">Verify</span>
+        </div>
+      </div>
+      <figcaption>A phished password alone is stopped here — which is exactly why attackers escalate.</figcaption>
+    </figure>
+
+    <figure class="scard">
+      <div class="screen">
+        <div class="bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">replay_demo.py — attacker client</span></div>
+        <div class="body">
+          <span class="tagstrip a">Stage 03 — session hijack</span>
+          <div class="mono">GET /api/me  <span class="r">401</span>   (no token)
+GET /api/me  <span class="g">200</span>   (stolen session cookie)
+  account_balance : $14,204.55
+  ssn_last4       : 0097
+
+The second factor was never re-checked.</div>
+        </div>
+      </div>
+      <figcaption>A copied session cookie is replayed — full access, no password, no 2FA. The session was the prize.</figcaption>
+    </figure>
+
+    <figure class="scard">
+      <div class="screen">
+        <div class="bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">localhost:5000/secure</span></div>
+        <div class="body">
+          <span class="tagstrip d">Stage 04 — the defense</span>
+          <h4>Passkey (FIDO2 / WebAuthn)</h4>
+          <div class="field">victim@examplecorp.test</div>
+          <span class="btn-fake">Register a passkey</span><span class="btn-fake ghost">Sign in</span>
+        </div>
+      </div>
+      <figcaption>Nothing to phish, and the signature is bound to the origin — the fake portal and any relay come away empty.</figcaption>
+    </figure>
+
+    <figure class="scard">
+      <div class="screen">
+        <div class="bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">localhost:5000/qr</span></div>
+        <div class="body">
+          <span class="tagstrip a">Delivery — quishing</span>
+          <div class="qrbox">
+            <svg width="78" height="78" viewBox="0 0 29 29" shape-rendering="crispEdges" aria-hidden="true">
+              <rect width="29" height="29" fill="#fff"/>
+              <path fill="#111" d="M0 0h7v1h-7z M0 0h1v7h-1z M6 0h1v7h-1z M0 6h7v1h-7z M2 2h3v3h-3z M22 0h7v1h-7z M22 0h1v7h-1z M28 0h1v7h-1z M22 6h7v1h-7z M24 2h3v3h-3z M0 22h7v1h-7z M0 22h1v7h-1z M6 22h1v7h-1z M0 28h7v1h-7z M2 24h3v3h-3z M9 1h1v1h-1z M11 0h1v2h-1z M13 1h1v1h-1z M15 0h1v1h-1z M17 1h1v2h-1z M19 0h1v1h-1z M9 3h2v1h-2z M13 3h1v2h-1z M16 4h2v1h-2z M19 3h1v1h-1z M9 9h2v2h-2z M13 9h1v1h-1z M16 10h2v1h-2z M20 9h1v2h-1z M23 10h3v1h-3z M27 9h1v2h-1z M9 13h1v3h-1z M12 14h3v1h-3z M17 13h1v2h-1z M20 15h2v1h-2z M24 13h1v3h-1z M11 18h2v1h-2z M14 17h1v2h-1z M17 19h2v1h-2z M21 18h1v2h-1z M24 18h2v1h-2z M9 21h1v5h-1z M11 23h3v1h-3z M15 22h1v3h-1z M18 24h3v1h-3z M22 22h1v4h-1z M25 24h3v1h-3z M27 27h1v1h-1z"/>
+            </svg>
+            <div>
+              <h4 style="margin:0 0 6px">Scan to continue</h4>
+              <p style="margin:0;color:var(--ink-soft);font-size:13px">The URL is hidden, and the victim moves to an unmanaged phone.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <figcaption>The same capture, delivered by a QR code — points only to the local training portal.</figcaption>
+    </figure>
+  </div>
+
+  <div class="body-col">
+    <p style="margin-top:26px;color:var(--ink-soft);font-size:16px">The interactive lab is intentionally <strong>not</strong> deployed to the public internet — it needs a backend and includes a credential-capture page. It runs on an isolated local host and is driven live during the presentation; the screens above show each stage.</p>
+  </div>
+</div></section>
+
+<section id="scope"><div class="shell"><div class="body-col">
+  <div class="sechead"><span class="signum">06</span><h2>Contained by design.</h2></div>
+  <div class="scope">
+    <p><strong>This project never clones, proxies, or contacts a real website or identity provider.</strong> The target is a fictional service built for the lab and run on an isolated host.</p>
+    <p style="color:var(--ink-soft)">Session theft is demonstrated by replaying a token against the lab's own application — not with a reusable tool against live services. Radio testing is confined to owned devices in a controlled space, using synthetic credentials that are deleted after the final demonstration.</p>
+  </div>
+  <div class="scope">
+    <p><strong>Authorized use only.</strong> The techniques here are presented for education and defense. Operating a rogue access point against other people's devices, intercepting their traffic, or cloning a real login to collect real credentials can be unlawful even without intent to harm.</p>
+  </div>
+</div></div></section>
+
+</main>
+
+<footer><div class="shell"><div class="body-col">
+  <p>Senior Security Project &middot; 2026</p>
+  <p>The modern credential-phishing chain and the phishing-resistant authentication that defeats it.</p>
+</div></div></footer>
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Captured</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="evilbar">&#9888; EVIL PORTAL (training) &middot; credentials harvested</div>
+  <header class="top"><div class="logo">Example<span>Corp</span></div><div class="small muted">attacker view</div></header>
+  <div class="wrap">
+    <div class="card">
+      <h1>Credentials captured (plaintext)</h1>
+      <p class="muted small">This is what the attacker sees &mdash; the same live plaintext you observed on the T-Embed. Also appended to <code>data/captured.log</code>.</p>
+      <div class="kv">username: {{ username }}
+password: {{ password }}</div>
+
+      <h2>So the attacker has the password&hellip; now what?</h2>
+      <div class="step">
+        <p><span class="pill green">Good news for the defender</span> The attacker now takes these to the <a href="/login">real ExampleCorp login</a> &mdash; and gets stopped at the TOTP step. A phished password <strong>alone</strong> is not enough.</p>
+      </div>
+      <div class="step">
+        <p><span class="pill red">The escalation</span> This is exactly why real-world phishing moved to <em>adversary-in-the-middle</em>, stealing the post-login <strong>session token</strong> instead. See Stage 3 on the <a href="/">lab home</a>.</p>
+      </div>
+      <div class="step">
+        <p><span class="pill green">The fix</span> If ExampleCorp used <a href="/secure">passkeys</a>, this page would have nothing to harvest in the first place &mdash; there is no password to type. See Stage 4.</p>
+      </div>
+      <a class="btn ghost" href="/">Back to lab home</a>
+    </div>
+  </div>
+</body>
+</html>

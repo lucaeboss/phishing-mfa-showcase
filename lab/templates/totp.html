@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Two-factor &middot; ExampleCorp</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="trainbar">TRAINING LAB &middot; fictional service</div>
+  <header class="top"><div class="logo">Example<span>Corp</span></div><div class="small"><a href="/">lab home</a></div></header>
+  <div class="wrap center">
+    <div class="card">
+      <h1>Enter your code</h1>
+      <p class="muted small">Step 2 of 2 &mdash; the 6-digit code from your authenticator app.</p>
+      {% if error %}<div class="err">{{ error }}</div>{% endif %}
+      <form method="post" action="/api/totp">
+        <label>One-time code</label>
+        <input type="text" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required>
+        <button type="submit">Verify</button>
+      </form>
+      <p class="small muted" style="margin-top:14px">This step is why a phished password alone fails &mdash; and why attackers go after the session that forms <em>after</em> this step.</p>
+    </div>
+  </div>
+</body>
+</html>

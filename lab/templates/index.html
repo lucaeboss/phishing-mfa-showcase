@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ExampleCorp Security Lab</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="trainbar">SECURITY-AWARENESS TRAINING LAB &middot; &ldquo;ExampleCorp&rdquo; is a fictional service &middot; everything runs on your own machine</div>
+  <header class="top">
+    <div class="logo">Example<span>Corp</span> <span class="small muted">security lab</span></div>
+    <div class="small">{% if user %}Signed in as {{ user }} &middot; <a href="#" onclick="document.getElementById('lo').submit();return false;">log out</a>
+      <form id="lo" method="post" action="/api/logout" style="display:none"></form>
+    {% else %}<span class="muted">not signed in</span>{% endif %}</div>
+  </header>
+
+  <div class="wrap">
+    <h1>MFA phishing-resistance lab</h1>
+    <p class="muted">A closed-loop demonstration of the modern credential-phishing chain and the defense that breaks it. Follow the stages in order &mdash; each one sets up the next.</p>
+
+    <div class="step">
+      <h2>Stage 0 &middot; Set up the target</h2>
+      <p>Create an ExampleCorp account protected by a password <em>and</em> TOTP two-factor auth. (A demo account is already seeded &mdash; see the server console.)</p>
+      <a class="btn" href="/enroll">Enroll an account</a>
+      <a class="btn ghost" href="/login">Normal login &rarr;</a>
+    </div>
+
+    <div class="step">
+      <h2>Stage 1 &middot; Credential capture (the &ldquo;evil portal&rdquo;)</h2>
+      <p>A fake ExampleCorp login page harvests the username and password in plaintext &mdash; the captive-portal attack from the project's hardware phase (T-Embed CC1101). Submit the seeded creds and watch them land in the capture log.</p>
+      <a class="btn" href="/portal">Open the evil portal</a>
+      <a class="btn ghost" href="/qr">QR delivery (quishing) &rarr;</a>
+    </div>
+
+    <div class="step">
+      <h2>Stage 2 &middot; TOTP stops basic phishing</h2>
+      <p>Take the captured password to the real login. You&rsquo;ll hit the TOTP wall: a stolen password alone is <em>not</em> enough. This is the honest result &mdash; and exactly why attackers escalated.</p>
+      <a class="btn ghost" href="/login">Try the captured creds &rarr;</a>
+    </div>
+
+    <div class="step">
+      <h2>Stage 3 &middot; Session theft bypasses 2FA</h2>
+      <p>Log in fully (password + TOTP), then copy your <code>demo_session</code> cookie and hand it to <code>replay_demo.py</code>. The script reaches protected data <strong>without any second factor</strong> &mdash; the session token is the real prize. See the README for the exact steps.</p>
+      <a class="btn ghost" href="/dashboard">Go to dashboard &rarr;</a>
+    </div>
+
+    <div class="step">
+      <h2>Stage 4 &middot; The defense: passkeys (FIDO2)</h2>
+      <p>Register a passkey and sign in with it. The credential is cryptographically bound to this origin, so the evil portal has nothing to harvest and an AiTM relay can&rsquo;t obtain a usable assertion. This is your showstopper.</p>
+      <a class="btn" href="/secure">Open the passkey demo</a>
+    </div>
+
+    <p class="small muted">Scope &amp; ethics: this lab targets only this local app. It never clones, proxies, or contacts any real website. See <code>docs/scope-and-ethics.md</code>.</p>
+  </div>
+</body>
+</html>

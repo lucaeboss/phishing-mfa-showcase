@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard &middot; ExampleCorp</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="trainbar">TRAINING LAB &middot; fictional service</div>
+  <header class="top">
+    <div class="logo">Example<span>Corp</span></div>
+    <div class="small">{{ username }} &middot; <a href="#" onclick="document.getElementById('lo').submit();return false;">log out</a>
+      <form id="lo" method="post" action="/api/logout" style="display:none"></form></div>
+  </header>
+  <div class="wrap">
+    <div class="card">
+      <h1>Welcome back, {{ username }}</h1>
+      <div class="ok">You are fully authenticated (password + TOTP).</div>
+      <p>A <strong>session token</strong> now lives in your <code>demo_session</code> cookie. From here on, every protected request is authorized by that token alone &mdash; the second factor is <em>not</em> re-checked.</p>
+      <h2>Your (fake) sensitive data</h2>
+      <div class="kv">GET /api/me &rarr; returns balance, SSN last-4, etc.</div>
+      <h2>Stage 3: prove the session is the prize</h2>
+      <ol class="small">
+        <li>Open DevTools &rarr; Application &rarr; Cookies &rarr; <code>http://localhost:5000</code>.</li>
+        <li>Copy the value of <code>demo_session</code>.</li>
+        <li>In the project folder run: <code>python replay_demo.py &lt;paste-the-value&gt;</code></li>
+      </ol>
+      <p class="small muted">The script is a separate &ldquo;attacker&rdquo; client. It never logs in &mdash; it just presents the stolen token and walks straight into <code>/api/me</code>. That is an AiTM session hijack, demonstrated against this app only.</p>
+    </div>
+  </div>
+</body>
+</html>

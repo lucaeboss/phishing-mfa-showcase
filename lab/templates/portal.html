@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in &middot; ExampleCorp</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="evilbar">&#9888; EVIL PORTAL (training) &middot; this page is the ATTACKER&rsquo;S fake login for the fictional ExampleCorp &middot; it harvests whatever you type</div>
+  <header class="top"><div class="logo">Example<span>Corp</span></div><div class="small muted">secure sign-in</div></header>
+  <div class="wrap center">
+    <div class="card">
+      <h1>Sign in to continue</h1>
+      <p class="muted small">Please re-authenticate to access the ExampleCorp network.</p>
+      <form method="post" action="/portal/capture">
+        <label>Username</label>
+        <input type="text" name="username" autocomplete="off" required>
+        <label>Password</label>
+        <input type="password" name="password" required>
+        <button type="submit">Sign in</button>
+      </form>
+    </div>
+    <p class="small muted">Looks legitimate, doesn&rsquo;t it? That is the point. Nothing you type here reaches ExampleCorp &mdash; it goes to the attacker&rsquo;s log.</p>
+  </div>
+</body>
+</html>

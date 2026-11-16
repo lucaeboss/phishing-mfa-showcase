@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in &middot; ExampleCorp</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="trainbar">TRAINING LAB &middot; fictional service &middot; this is the REAL ExampleCorp login</div>
+  <header class="top"><div class="logo">Example<span>Corp</span></div><div class="small"><a href="/">lab home</a></div></header>
+  <div class="wrap center">
+    <div class="card">
+      <h1>Sign in to ExampleCorp</h1>
+      {% if error %}<div class="err">{{ error }}</div>{% endif %}
+      <form method="post" action="/api/login">
+        <label>Username</label>
+        <input type="text" name="username" autocomplete="off" required>
+        <label>Password</label>
+        <input type="password" name="password" required>
+        <button type="submit">Sign in</button>
+      </form>
+      <p class="small muted" style="margin-top:14px">Step 1 of 2 &mdash; after your password you&rsquo;ll be asked for a one-time code.</p>
+    </div>
+    <p class="small"><a href="/enroll">Create an account</a> &middot; <a href="/secure">Use a passkey instead</a></p>
+  </div>
+</body>
+</html>
